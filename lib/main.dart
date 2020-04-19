@@ -1,3 +1,5 @@
+import 'package:climateflutter/screens/home_page.dart';
+
 import 'screens/loading_page.dart';
 import 'package:flutter/material.dart';
 
@@ -10,7 +12,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Climate',
       theme: ThemeData.dark(),
-      home: LoadingPage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => LoadingPage(),
+        '/home': (context) => HomePage(),
+      },
     );
   }
 }

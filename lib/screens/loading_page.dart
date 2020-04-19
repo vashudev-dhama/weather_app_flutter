@@ -1,9 +1,9 @@
+import 'dart:convert';
+
+import 'package:climateflutter/screens/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import '../services/location.dart';
-import '../services/networking.dart';
-import '../utilities/constants.dart';
-import 'home_page.dart';
+import 'package:climateflutter/services/weather.dart';
 
 class LoadingPage extends StatefulWidget {
   _LoadingPageState createState() => _LoadingPageState();
@@ -13,19 +13,15 @@ class _LoadingPageState extends State<LoadingPage> {
   @override
   void initState() {
     super.initState();
+    print('loading init occur------------');
     getLocationData();
+    print('loading getLocationData occur-----------');
   }
 
   Future getLocationData() async {
-    /// Get current location [longitude] and [latitude] using Geolocator API.
-    Location location = Location();
-    await location.getCurrentLocation();
-
-    /// Make HTTP get request to get JSON data from Openweathermap.org for current [latitude] and [longitude].
-    NetworkConnection networkConnection = NetworkConnection(
-        'https://api.openweathermap.org/data/2.5/weather?lat=${location.latitude}&lon=${location.longitude}&appid=$apiKey&units=metric');
-    var jsonDecodedData = await networkConnection.getWeatherJsonData();
-    print(jsonDecodedData);
+    /// Get the weather data using Geolocator and Openweathermap.org APIs.
+    var jsonDecodedData = await WeatherModel().getLocationWeather();
+    print('jsonDecodeData on loading page:====>>>> $jsonDecodedData');
 
     /// After obtaining the data, proceed to the home_page.dart.
     Navigator.push(
@@ -38,13 +34,27 @@ class _LoadingPageState extends State<LoadingPage> {
     );
   }
 
+//  Future getInputCityData() async {
+//    /// Get the weather data using [inputCity] and openweather.org API.
+//    var jsonDecodeData = await WeatherModel().getCityWeather(inputCity);
+//
+//  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: SpinKitPulse(
-          color: Colors.white,
-          size: 100.0,
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('images/loading_screen.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: SafeArea(
+          child: SpinKitPulse(
+            color: Colors.white,
+            size: 100.0,
+          ),
         ),
       ),
     );
