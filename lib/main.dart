@@ -1,5 +1,3 @@
-import 'package:climateflutter/screens/home_page.dart';
-
 import 'screens/loading_page.dart';
 import 'package:flutter/material.dart';
 
@@ -10,13 +8,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Climate',
       theme: ThemeData.dark(),
-      initialRoute: '/',
-      routes: {
-        '/': (context) => LoadingPage(),
-        '/home': (context) => HomePage(),
-      },
+      home: LoadingPage(),
     );
   }
 }

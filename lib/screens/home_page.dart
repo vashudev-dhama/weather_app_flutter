@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../utilities/constants.dart';
 import 'package:climateflutter/services/weather.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:climateflutter/utilities/reusable_tiles.dart';
 
 class HomePage extends StatefulWidget {
   final weatherData;
@@ -25,12 +27,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    print('home page init occur --------------------');
     updateUI(widget.weatherData);
-    print('updateUI homepage occur ------------------');
-//    print(widget.weatherData);
   }
 
+  /// To update the UI based on fetched [weatherData].
   void updateUI(dynamic weatherData) {
     setState(() {
       /// If for any reason, weatherData couldn't be fetched.
@@ -45,19 +45,17 @@ class _HomePageState extends State<HomePage> {
       }
       double temp = num.parse(weatherData['main']['temp'].toStringAsFixed(1));
       temperature = temp;
-      humidity = weatherData['main']['humidity']; // in % TODO
-      cloudiness = weatherData['clouds']['all']; //in % TODO
+      humidity = weatherData['main']['humidity'];
+      cloudiness = weatherData['clouds']['all'];
       weatherDescription = weatherData['weather'][0]['main'];
-      windSpeed = weatherData['wind']['speed']; // in m/s TODO
+      windSpeed = weatherData['wind']['speed'];
       cityName = weatherData['name'];
     });
   }
 
   Future getInputCityData(String inputCity) async {
     /// Get the weather data using [inputCity] and openweather.org API.
-    print('getCityData homepage occur----------------');
     var jsonDecodeData = await WeatherModel().getCityWeather(inputCity);
-    print('city-wise jsonDecodedData fetched------------------');
     return jsonDecodeData;
   }
 
@@ -74,21 +72,18 @@ class _HomePageState extends State<HomePage> {
         ),
         child: SafeArea(
           child: Column(
-            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: <Widget>[
+                    /// My location icon goes here.
                     Expanded(
                       child: GestureDetector(
                         onTap: () async {
                           var weatherData = await weather.getLocationWeather();
                           updateUI(weatherData);
-                          print(
-                              'current city data requested-------------------');
                         },
                         child: Icon(
                           Icons.my_location,
@@ -97,6 +92,8 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                     ),
+
+                    /// TextField goes here.
                     Expanded(
                       flex: 4,
                       child: TextField(
@@ -122,20 +119,18 @@ class _HomePageState extends State<HomePage> {
                         },
                       ),
                     ),
+
+                    /// Search icon goes here.
                     Expanded(
                       child: GestureDetector(
                         onTap: () async {
-                          // Hide the keypad.
-                          FocusScope.of(context).unfocus();
-                          print(inputCity);
+                          FocusScope.of(context).unfocus(); // Hide the keypad.
                           var localWeatherData =
                               await getInputCityData(inputCity);
                           _controller.clear();
                           setState(() {
                             updateUI(localWeatherData);
                           });
-                          print(
-                              'city-wise data requested-----------------------');
                         },
                         child: Icon(
                           Icons.search,
@@ -147,42 +142,74 @@ class _HomePageState extends State<HomePage> {
                   ],
                 ),
               ),
-              Text(
-                cityName,
-                style: kCityTextStyle,
-                textAlign: TextAlign.center,
+
+              /// City name goes here.
+              Padding(
+                padding: const EdgeInsets.only(top: 10.0),
+                child: Text(
+                  cityName,
+                  style: kCityTextStyle,
+                  textAlign: TextAlign.center,
+                ),
               ),
+
+              /// Divider line here.
               SizedBox(
-                width: 80.0,
+                width: 100.0,
                 height: 10.0,
                 child: Divider(
                   thickness: 2.0,
                   color: Colors.white70,
                 ),
               ),
+
+              /// Weather Description shown here.
               Padding(
-                padding: const EdgeInsets.only(top: 20.0),
+                padding: const EdgeInsets.only(top: 40.0),
                 child: Text(
                   weatherDescription,
                   textAlign: TextAlign.center,
                   style: kDescriptionTextStyle,
                 ),
               ),
-              Text(
-                '$temperature°C',
-                style: kTempTextStyle,
+
+              /// Fetched Temperature shown here.
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  '$temperature°C',
+                  style: kTempTextStyle,
+                ),
               ),
-              Text(
-                '${humidity.toString()}%',
-                style: kHumidityTextStyle,
-              ),
-              Text(
-                '${windSpeed.toStringAsFixed(1)}mps',
-                style: kWindSpeedTextStyle,
-              ),
-              Text(
-                '${cloudiness.toString()}%',
-                style: kCloudinessTextStyle,
+
+              /// Tiles for Humidity, Clouds and Wind goes here.
+              Padding(
+                padding: const EdgeInsets.only(top: 80.0),
+                child: Row(
+                  children: <Widget>[
+                    ReusableTiles(
+                      weatherPropertyName: 'Humidity',
+                      weatherPropertyValue: humidity,
+                      weatherPropertyUnit: '%',
+                      color: kHumidityTileColor,
+                      weatherPropertyIcon: FontAwesomeIcons.tint,
+                    ),
+                    ReusableTiles(
+                      weatherPropertyName: 'Clouds',
+                      weatherPropertyValue: cloudiness,
+                      weatherPropertyUnit: '%',
+                      color: kCloudsTileColor,
+                      weatherPropertyIcon: Icons.cloud,
+                    ),
+                    ReusableTiles(
+                      weatherPropertyName: 'Wind',
+                      weatherPropertyValue: windSpeed * 2.237, //convert to mph
+                      weatherPropertyUnit: 'mph',
+                      color: kWindTileColor,
+                      weatherPropertyIcon: FontAwesomeIcons.wind,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),

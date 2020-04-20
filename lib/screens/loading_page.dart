@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:climateflutter/screens/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -13,9 +11,7 @@ class _LoadingPageState extends State<LoadingPage> {
   @override
   void initState() {
     super.initState();
-    print('loading init occur------------');
     getLocationData();
-    print('loading getLocationData occur-----------');
   }
 
   Future getLocationData() async {
@@ -33,12 +29,6 @@ class _LoadingPageState extends State<LoadingPage> {
       ),
     );
   }
-
-//  Future getInputCityData() async {
-//    /// Get the weather data using [inputCity] and openweather.org API.
-//    var jsonDecodeData = await WeatherModel().getCityWeather(inputCity);
-//
-//  }
 
   @override
   Widget build(BuildContext context) {
